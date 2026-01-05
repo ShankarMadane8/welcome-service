@@ -18,9 +18,9 @@ public class WelcomeController {
 
     @GetMapping("/welcome")
     // @org.springframework.cache.annotation.Cacheable(value = "welcome-cache")
-    public String welcome(@RequestParam (required = false,defaultValue = "shankar") String name,
-                          @RequestParam (required = false,defaultValue = "24") int age,
-                          @RequestParam (required = false,defaultValue = "shankar@gmail.com") String email) {
+    public String welcome(@RequestParam(required = false, defaultValue = "shankar") String name,
+            @RequestParam(required = false, defaultValue = "24") int age,
+            @RequestParam(required = false, defaultValue = "shankar@gmail.com") String email) {
         log.info("Request received at Welcome Service");
 
         // 1. Call Greet Service (Synchronous)
@@ -29,9 +29,15 @@ public class WelcomeController {
 
         // 2. Send Event to Kafka (Asynchronous)
         kafkaProducer.sendMessage("user-visits", "User visited Welcome Service at " + java.time.LocalDateTime.now());
-        Student student = new Student();
-        student.setName(name);
-        kafkaProducer.sendStudentKafkaTemplate("student-visits",student);
+        Student student = Student.builder()
+                .name(name)
+                .age(age)
+                .email(email)
+                .address("Bangalore") // Default/Dummy address
+                .course("Microservices") // Default/Dummy course
+                .status("PENDING")
+                .build();
+        kafkaProducer.sendStudentKafkaTemplate("student-visits", student);
 
         return "Welcome to Microservices! (Port: 8081) -> " + greetResponse;
     }
