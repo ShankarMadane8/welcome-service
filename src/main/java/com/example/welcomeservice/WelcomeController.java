@@ -1,11 +1,18 @@
 package com.example.welcomeservice;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Tag(name = "Welcome", description = "Welcome service operations with Kafka integration")
 public class WelcomeController {
 
     private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WelcomeController.class);
@@ -16,11 +23,24 @@ public class WelcomeController {
     @Autowired
     private KafkaProducerService kafkaProducer;
 
+    @Value("${server.port}")
+    String port;
+
+    @Operation(summary = "Welcome endpoint with student creation", description = "This endpoint orchestrates multiple operations: "
+            +
+            "1) Calls the Greet Service synchronously via Feign, " +
+            "2) Publishes a user visit event to Kafka, " +
+            "3) Creates a student record with PENDING status and publishes to Kafka for async processing. " +
+            "The student will be consumed by Greet Service and processed by the batch scheduler.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully processed welcome request")
+    })
     @GetMapping("/welcome")
     // @org.springframework.cache.annotation.Cacheable(value = "welcome-cache")
-    public String welcome(@RequestParam(required = false, defaultValue = "shankar") String name,
-            @RequestParam(required = false, defaultValue = "24") int age,
-            @RequestParam(required = false, defaultValue = "shankar@gmail.com") String email) {
+    public String welcome(
+            @Parameter(description = "Name of the student", example = "shankar") @RequestParam(required = false, defaultValue = "shankar") String name,
+            @Parameter(description = "Age of the student", example = "24") @RequestParam(required = false, defaultValue = "24") int age,
+            @Parameter(description = "Email address of the student", example = "shankar@gmail.com") @RequestParam(required = false, defaultValue = "shankar@gmail.com") String email) {
         log.info("Request received at Welcome Service");
 
         // 1. Call Greet Service (Synchronous)
@@ -39,6 +59,6 @@ public class WelcomeController {
                 .build();
         kafkaProducer.sendStudentKafkaTemplate("student-visits", student);
 
-        return "Welcome to Microservices! (Port: 8081) -> " + greetResponse;
+        return "Welcome to Microservices! (Port: "+port+") -> " + greetResponse;
     }
 }
