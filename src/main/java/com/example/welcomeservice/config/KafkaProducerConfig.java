@@ -1,8 +1,9 @@
-package com.example.welcomeservice;
+package com.example.welcomeservice.config;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.welcomeservice.dto.Student;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

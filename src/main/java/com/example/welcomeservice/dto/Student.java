@@ -1,4 +1,4 @@
-package com.example.welcomeservice;
+package com.example.welcomeservice.dto;
 
 import java.io.Serializable;
 

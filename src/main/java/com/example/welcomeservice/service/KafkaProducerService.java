@@ -1,6 +1,6 @@
-package com.example.welcomeservice;
+package com.example.welcomeservice.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.welcomeservice.dto.Student;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 

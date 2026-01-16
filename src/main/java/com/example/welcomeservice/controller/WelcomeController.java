@@ -1,5 +1,8 @@
-package com.example.welcomeservice;
+package com.example.welcomeservice.controller;
 
+import com.example.welcomeservice.client.GreetFeignClient;
+import com.example.welcomeservice.dto.Student;
+import com.example.welcomeservice.service.KafkaProducerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
