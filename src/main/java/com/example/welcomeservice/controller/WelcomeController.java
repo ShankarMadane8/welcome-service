@@ -8,17 +8,19 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 @Tag(name = "Welcome", description = "Welcome service operations with Kafka integration")
 public class WelcomeController {
 
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(WelcomeController.class);
 
     @Autowired
     private GreetFeignClient greetClient;
@@ -27,7 +29,7 @@ public class WelcomeController {
     private KafkaProducerService kafkaProducer;
 
     @Value("${server.port}")
-    String port;
+    private String port;
 
     @Operation(summary = "Welcome endpoint with student creation", description = "This endpoint orchestrates multiple operations: "
             +
@@ -39,7 +41,7 @@ public class WelcomeController {
             @ApiResponse(responseCode = "200", description = "Successfully processed welcome request")
     })
     @GetMapping("/welcome")
-    // @org.springframework.cache.annotation.Cacheable(value = "welcome-cache")
+//  @Cacheable(value = "welcome-cache")
     public String welcome(
             @Parameter(description = "Name of the student", example = "shankar") @RequestParam(required = false, defaultValue = "shankar") String name,
             @Parameter(description = "Age of the student", example = "24") @RequestParam(required = false, defaultValue = "24") int age,
